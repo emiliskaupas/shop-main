@@ -211,7 +211,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
     }}>
       <CardMedia sx={{ 
         position: 'relative', 
-        height: { xs: 120, sm: 200, md: 267 }, // Responsive height - smaller on mobile
+        height: { xs: 80, sm: 200, md: 267 }, // Much smaller on mobile
         width: '100%',
       }}>
         {product.imageUrl ? (
@@ -241,14 +241,14 @@ const ProductCard: React.FC<ProductCardProps> = ({
               bgcolor: 'grey.200',
             }}
           >
-            <Avatar sx={{ width: { xs: 40, sm: 60, md: 80 }, height: { xs: 40, sm: 60, md: 80 } }}>
+            <Avatar sx={{ width: { xs: 30, sm: 60, md: 80 }, height: { xs: 30, sm: 60, md: 80 } }}>
               {product.name.charAt(0)}
             </Avatar>
           </Box>
         )}
       </CardMedia>
       
-      <CardContent sx={{ flexGrow: 1, p: { xs: 1, sm: 2 } }}>
+      <CardContent sx={{ flexGrow: 1, p: { xs: 0.5, sm: 2 } }}>
         <Typography 
           variant="h6" 
           gutterBottom 
@@ -256,7 +256,8 @@ const ProductCard: React.FC<ProductCardProps> = ({
           component={Link}
           to={`/products/${product.id}`}
           sx={{ 
-            fontSize: { xs: '0.875rem', sm: '1rem', md: '1.25rem' }, // Responsive font size
+            fontSize: { xs: '0.7rem', sm: '1rem', md: '1.25rem' }, // Even smaller on mobile
+            mb: { xs: 0.25, sm: 1 },
             textDecoration: 'none',
             color: 'inherit',
             '&:hover': {
@@ -307,24 +308,25 @@ const ProductCard: React.FC<ProductCardProps> = ({
           </Box>
         )}
         
-        <Box display="flex" justifyContent="space-between" alignItems="center" mb={{ xs: 0.5, sm: 1 }}>
+        <Box display="flex" justifyContent="space-between" alignItems="center" mb={{ xs: 0.25, sm: 1 }}>
           <Chip 
             label={getProductTypeLabel(product.productType)} 
             size="small" 
             color="primary"
             variant="outlined"
             sx={{ 
-              fontSize: { xs: '0.625rem', sm: '0.75rem' },
-              height: { xs: 20, sm: 24 },
+              fontSize: { xs: '0.55rem', sm: '0.75rem' },
+              height: { xs: 16, sm: 24 },
               '& .MuiChip-label': {
-                px: { xs: 0.5, sm: 1 }
+                px: { xs: 0.3, sm: 1 },
+                py: 0
               }
             }}
           />
           <Typography 
             variant="h6" 
             color="primary"
-            sx={{ fontSize: { xs: '0.875rem', sm: '1rem', md: '1.25rem' } }}
+            sx={{ fontSize: { xs: '0.75rem', sm: '1rem', md: '1.25rem' } }}
           >
             ${product.price.toFixed(2)}
           </Typography>
@@ -342,7 +344,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
         </Typography>
       </CardContent>
       
-      <CardActions sx={{ p: { xs: 0.5, sm: 1 } }}>
+      <CardActions sx={{ p: { xs: 0.25, sm: 1 } }}>
         {currentUser && currentUser.id === product.createdByUserId ? (
           <Button
             variant="contained"
@@ -355,8 +357,9 @@ const ProductCard: React.FC<ProductCardProps> = ({
                 bgcolor: 'success.dark',
               },
               cursor: 'default',
-              fontSize: { xs: '0.625rem', sm: '0.875rem' },
-              py: { xs: 0.5, sm: 0.75 },
+              fontSize: { xs: '0.55rem', sm: '0.875rem' },
+              py: { xs: 0.25, sm: 0.75 },
+              minHeight: { xs: 24, sm: 36 },
             }}
             disabled
           >
@@ -367,12 +370,16 @@ const ProductCard: React.FC<ProductCardProps> = ({
             variant="contained"
             fullWidth
             size="small"
-            startIcon={isAddingToCart ? <CircularProgress size={12} /> : <CartIcon sx={{ fontSize: { xs: 14, sm: 20 } }} />}
+            startIcon={isAddingToCart ? <CircularProgress size={10} /> : <CartIcon sx={{ fontSize: { xs: 12, sm: 20 } }} />}
             onClick={() => onAddToCart(product)}
             disabled={isAddingToCart}
             sx={{
-              fontSize: { xs: '0.625rem', sm: '0.875rem' },
-              py: { xs: 0.5, sm: 0.75 },
+              fontSize: { xs: '0.55rem', sm: '0.875rem' },
+              py: { xs: 0.25, sm: 0.75 },
+              minHeight: { xs: 24, sm: 36 },
+              '& .MuiButton-startIcon': {
+                marginRight: { xs: '2px', sm: '8px' }
+              }
             }}
           >
             {isAddingToCart ? 'Adding...' : 'Add to Cart'}
@@ -531,8 +538,16 @@ export const ProductList: React.FC = () => {
   }
 
   return (
-    <Box maxWidth="xl" mx="auto" p={{ xs: 0.5, sm: 1, md: 2 }}>
-      <Typography variant="h4" gutterBottom mb={{ xs: 1, sm: 2, md: 3 }} sx={{ px: { xs: 0.5, sm: 0 } }}>
+    <Box 
+      maxWidth="xl" 
+      mx="auto" 
+      p={{ xs: 0.5, sm: 1, md: 2 }}
+      sx={{ 
+        width: '100%',
+        overflowX: 'hidden'
+      }}
+    >
+      <Typography variant="h4" gutterBottom mb={{ xs: 1, sm: 2, md: 3 }} sx={{ px: { xs: 0.5, sm: 0 }, fontSize: { xs: '1.5rem', sm: '2rem', md: '2.125rem' } }}>
         Products
       </Typography>
       
@@ -569,15 +584,17 @@ export const ProductList: React.FC = () => {
               <Box
                 display="grid"
                 gridTemplateColumns={{
-                  xs: 'repeat(3, 1fr)', // 3 columns on mobile
-                  sm: 'repeat(auto-fit, minmax(200px, 1fr))', // Responsive on tablet
-                  md: 'repeat(auto-fit, minmax(280px, 1fr))', // Responsive on desktop
-                  lg: 'repeat(auto-fit, minmax(333px, 373px))', // Larger on big screens
+                  xs: 'repeat(3, 1fr)', // 3 equal columns on mobile
+                  sm: 'repeat(auto-fit, minmax(200px, 1fr))',
+                  md: 'repeat(auto-fit, minmax(280px, 1fr))',
+                  lg: 'repeat(auto-fit, minmax(333px, 373px))',
                 }}
-                gap={{ xs: 0.5, sm: 1.5, md: 2 }} // Smaller gaps on mobile
+                gap={{ xs: 0.25, sm: 1.5, md: 2 }}
                 sx={{
+                  width: '100%',
                   '& > *': {
                     width: '100%',
+                    minWidth: 0, // Allow cards to shrink below their minimum content size
                   }
                 }}
               >
