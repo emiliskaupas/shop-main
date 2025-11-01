@@ -203,15 +203,15 @@ const ProductCard: React.FC<ProductCardProps> = ({
 }) => {
   return (
     <Card sx={{ 
-      height: 533, // Fixed height (increased by 1/3)
-      width: '100%', // Fixed width
+      height: { xs: 'auto', sm: 533 }, // Auto height on mobile, fixed on larger screens
+      width: '100%',
       display: 'flex', 
       flexDirection: 'column',
-      maxWidth: 373, // Maximum width to prevent cards from getting too wide (increased by 1/3)
+      maxWidth: { xs: '100%', sm: 373 }, // Full width on mobile, max width on larger screens
     }}>
       <CardMedia sx={{ 
         position: 'relative', 
-        height: 267, // Fixed height instead of responsive padding (increased by 1/3)
+        height: { xs: 120, sm: 200, md: 267 }, // Responsive height - smaller on mobile
         width: '100%',
       }}>
         {product.imageUrl ? (
@@ -241,14 +241,14 @@ const ProductCard: React.FC<ProductCardProps> = ({
               bgcolor: 'grey.200',
             }}
           >
-            <Avatar sx={{ width: 80, height: 80 }}>
+            <Avatar sx={{ width: { xs: 40, sm: 60, md: 80 }, height: { xs: 40, sm: 60, md: 80 } }}>
               {product.name.charAt(0)}
             </Avatar>
           </Box>
         )}
       </CardMedia>
       
-      <CardContent sx={{ flexGrow: 1 }}>
+      <CardContent sx={{ flexGrow: 1, p: { xs: 1, sm: 2 } }}>
         <Typography 
           variant="h6" 
           gutterBottom 
@@ -256,6 +256,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
           component={Link}
           to={`/products/${product.id}`}
           sx={{ 
+            fontSize: { xs: '0.875rem', sm: '1rem', md: '1.25rem' }, // Responsive font size
             textDecoration: 'none',
             color: 'inherit',
             '&:hover': {
@@ -267,59 +268,95 @@ const ProductCard: React.FC<ProductCardProps> = ({
           {product.name}
         </Typography>
         
-        <Typography variant="body2" color="text.secondary" gutterBottom sx={{ 
-          display: '-webkit-box',
-          WebkitLineClamp: 2,
-          WebkitBoxOrient: 'vertical',
-          overflow: 'hidden',
-        }}>
+        <Typography 
+          variant="body2" 
+          color="text.secondary" 
+          gutterBottom 
+          sx={{ 
+            display: { xs: 'none', sm: '-webkit-box' }, // Hide description on mobile
+            WebkitLineClamp: 2,
+            WebkitBoxOrient: 'vertical',
+            overflow: 'hidden',
+            fontSize: { sm: '0.875rem' },
+          }}
+        >
           {product.shortDescription}
         </Typography>
         
         {/* Rating and Review Count */}
         {product.averageRating !== undefined && product.reviewCount !== undefined && product.reviewCount > 0 && (
-          <Box display="flex" alignItems="center" mb={1}>
+          <Box display="flex" alignItems="center" mb={{ xs: 0.5, sm: 1 }}>
             <Rating 
               value={product.averageRating} 
               precision={0.1} 
               readOnly 
               size="small" 
+              sx={{ fontSize: { xs: '0.875rem', sm: '1.25rem' } }}
             />
-            <Typography variant="body2" color="text.secondary" sx={{ ml: 1 }}>
-              {product.averageRating.toFixed(1)} ({product.reviewCount} {product.reviewCount === 1 ? 'review' : 'reviews'})
+            <Typography 
+              variant="body2" 
+              color="text.secondary" 
+              sx={{ 
+                ml: 0.5,
+                fontSize: { xs: '0.65rem', sm: '0.875rem' },
+                display: { xs: 'none', sm: 'inline' }
+              }}
+            >
+              {product.averageRating.toFixed(1)} ({product.reviewCount})
             </Typography>
           </Box>
         )}
         
-        <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
+        <Box display="flex" justifyContent="space-between" alignItems="center" mb={{ xs: 0.5, sm: 1 }}>
           <Chip 
             label={getProductTypeLabel(product.productType)} 
             size="small" 
             color="primary"
             variant="outlined"
+            sx={{ 
+              fontSize: { xs: '0.625rem', sm: '0.75rem' },
+              height: { xs: 20, sm: 24 },
+              '& .MuiChip-label': {
+                px: { xs: 0.5, sm: 1 }
+              }
+            }}
           />
-          <Typography variant="h6" color="primary">
+          <Typography 
+            variant="h6" 
+            color="primary"
+            sx={{ fontSize: { xs: '0.875rem', sm: '1rem', md: '1.25rem' } }}
+          >
             ${product.price.toFixed(2)}
           </Typography>
         </Box>
         
-        <Typography variant="caption" color="text.secondary">
+        <Typography 
+          variant="caption" 
+          color="text.secondary"
+          sx={{ 
+            fontSize: { xs: '0.625rem', sm: '0.75rem' },
+            display: { xs: 'none', sm: 'block' } // Hide creator name on mobile
+          }}
+        >
           By {product.createdByUserName}
         </Typography>
       </CardContent>
       
-      <CardActions>
+      <CardActions sx={{ p: { xs: 0.5, sm: 1 } }}>
         {currentUser && currentUser.id === product.createdByUserId ? (
           <Button
             variant="contained"
             fullWidth
+            size="small"
             sx={{
               bgcolor: 'success.main',
               color: 'success.contrastText',
               '&:hover': {
                 bgcolor: 'success.dark',
               },
-              cursor: 'default'
+              cursor: 'default',
+              fontSize: { xs: '0.625rem', sm: '0.875rem' },
+              py: { xs: 0.5, sm: 0.75 },
             }}
             disabled
           >
@@ -329,9 +366,14 @@ const ProductCard: React.FC<ProductCardProps> = ({
           <Button
             variant="contained"
             fullWidth
-            startIcon={isAddingToCart ? <CircularProgress size={16} /> : <CartIcon />}
+            size="small"
+            startIcon={isAddingToCart ? <CircularProgress size={12} /> : <CartIcon sx={{ fontSize: { xs: 14, sm: 20 } }} />}
             onClick={() => onAddToCart(product)}
             disabled={isAddingToCart}
+            sx={{
+              fontSize: { xs: '0.625rem', sm: '0.875rem' },
+              py: { xs: 0.5, sm: 0.75 },
+            }}
           >
             {isAddingToCart ? 'Adding...' : 'Add to Cart'}
           </Button>
@@ -489,12 +531,12 @@ export const ProductList: React.FC = () => {
   }
 
   return (
-    <Box maxWidth="xl" mx="auto" p={2}>
-      <Typography variant="h4" gutterBottom mb={3}>
+    <Box maxWidth="xl" mx="auto" p={{ xs: 0.5, sm: 1, md: 2 }}>
+      <Typography variant="h4" gutterBottom mb={{ xs: 1, sm: 2, md: 3 }} sx={{ px: { xs: 0.5, sm: 0 } }}>
         Products
       </Typography>
       
-      <Box display="flex" gap={3}>
+      <Box display="flex" gap={{ xs: 0.5, sm: 2, md: 3 }}>
         {/* Filter Sidebar */}
         <Box sx={{ minWidth: 280, display: { xs: 'none', md: 'block' } }}>
           <FilterSidebar filters={filters} onFiltersChange={setFilters} />
@@ -527,12 +569,12 @@ export const ProductList: React.FC = () => {
               <Box
                 display="grid"
                 gridTemplateColumns={{
-                  xs: 'repeat(3, 1fr)',
-                  sm: 'repeat(auto-fit, minmax(280px, 1fr))',
-                  md: 'repeat(auto-fit, minmax(300px, 1fr))',
-                  lg: 'repeat(auto-fit, minmax(333px, 373px))',
+                  xs: 'repeat(3, 1fr)', // 3 columns on mobile
+                  sm: 'repeat(auto-fit, minmax(200px, 1fr))', // Responsive on tablet
+                  md: 'repeat(auto-fit, minmax(280px, 1fr))', // Responsive on desktop
+                  lg: 'repeat(auto-fit, minmax(333px, 373px))', // Larger on big screens
                 }}
-                gap={2}
+                gap={{ xs: 0.5, sm: 1.5, md: 2 }} // Smaller gaps on mobile
                 sx={{
                   '& > *': {
                     width: '100%',
