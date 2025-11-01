@@ -12,8 +12,8 @@ using backend.Data;
 namespace backend.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20251006133337_AddReviewsTable")]
-    partial class AddReviewsTable
+    [Migration("20251101160741_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -792,6 +792,37 @@ namespace backend.Migrations
                         });
                 });
 
+            modelBuilder.Entity("backend.Models.RefreshToken", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<DateTime>("ExpiresAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsRevoked")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("RevokedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<long>("UserId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("RefreshTokens");
+                });
+
             modelBuilder.Entity("backend.Models.Review", b =>
                 {
                     b.Property<long>("Id")
@@ -871,7 +902,7 @@ namespace backend.Migrations
                         {
                             Id = 1L,
                             Email = "admin@shop.com",
-                            PasswordHash = "$2a$11$LDEgBiwfwyw36qT/SHuqfuoy2wP5kkKy34fQR0ICqM8iqDB6WahIK",
+                            PasswordHash = "$2a$11$AyYyz1fFYkZSyy0cPW5Fke0LnHsfmzGqVf0BbYz.6EBs7Gk8VsNOi",
                             Role = 1,
                             Username = "admin"
                         },
@@ -879,7 +910,7 @@ namespace backend.Migrations
                         {
                             Id = 2L,
                             Email = "john.doe@example.com",
-                            PasswordHash = "$2a$11$n8.vF.fQLy65KGVbKgD05eo8aJ5McwHP1tCe/8JXnCBtG8G5b5ldu",
+                            PasswordHash = "$2a$11$./hbegWTXObMiesQ/CyVY.qJ4eAMXgwmzg80Su0Ha8UfZnylTM1Wy",
                             Role = 0,
                             Username = "john_doe"
                         },
@@ -887,7 +918,7 @@ namespace backend.Migrations
                         {
                             Id = 3L,
                             Email = "jane.smith@example.com",
-                            PasswordHash = "$2a$11$7qpiBrBtLtONDKiTq4hQD..twQ048Y.N4IFFMzwZ9q6OElP3JmJAu",
+                            PasswordHash = "$2a$11$3fKpbcjMmjgrl..PScYD7OCYW3Vapg6EK1r3RHmJLXOgXPtigILp2",
                             Role = 0,
                             Username = "jane_smith"
                         });
@@ -932,6 +963,17 @@ namespace backend.Migrations
                         .IsRequired();
 
                     b.Navigation("CreatedBy");
+                });
+
+            modelBuilder.Entity("backend.Models.RefreshToken", b =>
+                {
+                    b.HasOne("backend.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("backend.Models.Review", b =>

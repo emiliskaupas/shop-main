@@ -12,8 +12,8 @@ using backend.Data;
 namespace backend.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250930185602_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20251101160802_AddReviews")]
+    partial class AddReviews
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -25,6 +25,42 @@ namespace backend.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("backend.Models.Cart", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<long>("UserId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
+
+                    b.ToTable("Carts");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1L,
+                            UserId = 1L
+                        },
+                        new
+                        {
+                            Id = 2L,
+                            UserId = 2L
+                        },
+                        new
+                        {
+                            Id = 3L,
+                            UserId = 3L
+                        });
+                });
+
             modelBuilder.Entity("backend.Models.CartItem", b =>
                 {
                     b.Property<long>("Id")
@@ -33,59 +69,22 @@ namespace backend.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
+                    b.Property<long>("CartId")
+                        .HasColumnType("bigint");
+
                     b.Property<long>("ProductId")
                         .HasColumnType("bigint");
 
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
 
-                    b.Property<long>("UserId")
-                        .HasColumnType("bigint");
-
                     b.HasKey("Id");
+
+                    b.HasIndex("CartId");
 
                     b.HasIndex("ProductId");
 
-                    b.HasIndex("UserId");
-
                     b.ToTable("CartItems");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1L,
-                            ProductId = 1L,
-                            Quantity = 1,
-                            UserId = 2L
-                        },
-                        new
-                        {
-                            Id = 2L,
-                            ProductId = 2L,
-                            Quantity = 2,
-                            UserId = 2L
-                        },
-                        new
-                        {
-                            Id = 3L,
-                            ProductId = 4L,
-                            Quantity = 1,
-                            UserId = 2L
-                        },
-                        new
-                        {
-                            Id = 4L,
-                            ProductId = 3L,
-                            Quantity = 1,
-                            UserId = 3L
-                        },
-                        new
-                        {
-                            Id = 5L,
-                            ProductId = 5L,
-                            Quantity = 1,
-                            UserId = 3L
-                        });
                 });
 
             modelBuilder.Entity("backend.Models.Product", b =>
@@ -793,6 +792,76 @@ namespace backend.Migrations
                         });
                 });
 
+            modelBuilder.Entity("backend.Models.RefreshToken", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<DateTime>("ExpiresAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsRevoked")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("RevokedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<long>("UserId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("RefreshTokens");
+                });
+
+            modelBuilder.Entity("backend.Models.Review", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("Comment")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("ModifiedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long>("ProductId")
+                        .HasColumnType("bigint");
+
+                    b.Property<int>("Rating")
+                        .HasColumnType("int")
+                        .HasAnnotation("MaxValue", 5)
+                        .HasAnnotation("MinValue", 1);
+
+                    b.Property<long>("UserId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
+
+                    b.HasIndex("UserId", "ProductId")
+                        .IsUnique();
+
+                    b.ToTable("Reviews");
+                });
+
             modelBuilder.Entity("backend.Models.User", b =>
                 {
                     b.Property<long>("Id")
@@ -833,7 +902,7 @@ namespace backend.Migrations
                         {
                             Id = 1L,
                             Email = "admin@shop.com",
-                            PasswordHash = "$2a$11$3BwaI6Drhh4YBps1lDQ67urWqnNfO6tdicamrUE.ebzpW/MmSJa.O",
+                            PasswordHash = "$2a$11$dlhdCo0kUbquu2qtG2SUT.9/oYOU/Des4ROBs0bmqVk7ocwKiqdGi",
                             Role = 1,
                             Username = "admin"
                         },
@@ -841,7 +910,7 @@ namespace backend.Migrations
                         {
                             Id = 2L,
                             Email = "john.doe@example.com",
-                            PasswordHash = "$2a$11$W0xDb3m/9c8YocmkCrC0beWWaTexoQctvM0BMl0x7fpRsUO6rC8ru",
+                            PasswordHash = "$2a$11$Q0T9jYtqYqGdb0zBN3WwfO0xfwpXvNgJNoGF..LNGIRYCh6wbJBS.",
                             Role = 0,
                             Username = "john_doe"
                         },
@@ -849,25 +918,38 @@ namespace backend.Migrations
                         {
                             Id = 3L,
                             Email = "jane.smith@example.com",
-                            PasswordHash = "$2a$11$y5A/zu1/W6hcmBsgoIKqAOdqN9cnkD78O5hAJMBwRy2VHV/89jUe6",
+                            PasswordHash = "$2a$11$FDxHRRGNl4nzIOhYAK2MseqBfAcAY2DMPBiBVdZz.y4cFn5NJdsH6",
                             Role = 0,
                             Username = "jane_smith"
                         });
                 });
 
-            modelBuilder.Entity("backend.Models.CartItem", b =>
+            modelBuilder.Entity("backend.Models.Cart", b =>
                 {
-                    b.HasOne("backend.Models.Product", "Product")
-                        .WithMany()
-                        .HasForeignKey("ProductId")
+                    b.HasOne("backend.Models.User", "User")
+                        .WithOne("Cart")
+                        .HasForeignKey("backend.Models.Cart", "UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("backend.Models.User", null)
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("backend.Models.CartItem", b =>
+                {
+                    b.HasOne("backend.Models.Cart", "Cart")
                         .WithMany("CartItems")
-                        .HasForeignKey("UserId")
+                        .HasForeignKey("CartId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("backend.Models.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Cart");
 
                     b.Navigation("Product");
                 });
@@ -883,9 +965,49 @@ namespace backend.Migrations
                     b.Navigation("CreatedBy");
                 });
 
-            modelBuilder.Entity("backend.Models.User", b =>
+            modelBuilder.Entity("backend.Models.RefreshToken", b =>
+                {
+                    b.HasOne("backend.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("backend.Models.Review", b =>
+                {
+                    b.HasOne("backend.Models.Product", "Product")
+                        .WithMany("Reviews")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("backend.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Product");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("backend.Models.Cart", b =>
                 {
                     b.Navigation("CartItems");
+                });
+
+            modelBuilder.Entity("backend.Models.Product", b =>
+                {
+                    b.Navigation("Reviews");
+                });
+
+            modelBuilder.Entity("backend.Models.User", b =>
+                {
+                    b.Navigation("Cart");
                 });
 #pragma warning restore 612, 618
         }

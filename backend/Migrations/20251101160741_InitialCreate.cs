@@ -30,6 +30,25 @@ namespace backend.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Carts",
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<long>(type: "bigint", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Carts", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Carts_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Products",
                 columns: table => new
                 {
@@ -56,12 +75,35 @@ namespace backend.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "RefreshTokens",
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Token = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    UserId = table.Column<long>(type: "bigint", nullable: false),
+                    ExpiresAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IsRevoked = table.Column<bool>(type: "bit", nullable: false),
+                    RevokedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_RefreshTokens", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_RefreshTokens_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "CartItems",
                 columns: table => new
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<long>(type: "bigint", nullable: false),
+                    CartId = table.Column<long>(type: "bigint", nullable: false),
                     ProductId = table.Column<long>(type: "bigint", nullable: false),
                     Quantity = table.Column<int>(type: "int", nullable: false)
                 },
@@ -69,17 +111,47 @@ namespace backend.Migrations
                 {
                     table.PrimaryKey("PK_CartItems", x => x.Id);
                     table.ForeignKey(
+                        name: "FK_CartItems_Carts_CartId",
+                        column: x => x.CartId,
+                        principalTable: "Carts",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
                         name: "FK_CartItems_Products_ProductId",
+                        column: x => x.ProductId,
+                        principalTable: "Products",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Reviews",
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ProductId = table.Column<long>(type: "bigint", nullable: false),
+                    UserId = table.Column<long>(type: "bigint", nullable: false),
+                    Rating = table.Column<int>(type: "int", nullable: false),
+                    Comment = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ModifiedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Reviews", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Reviews_Products_ProductId",
                         column: x => x.ProductId,
                         principalTable: "Products",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_CartItems_Users_UserId",
+                        name: "FK_Reviews_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.InsertData(
@@ -87,9 +159,19 @@ namespace backend.Migrations
                 columns: new[] { "Id", "Email", "PasswordHash", "Role", "Username" },
                 values: new object[,]
                 {
-                    { 1L, "admin@shop.com", "$2a$11$3BwaI6Drhh4YBps1lDQ67urWqnNfO6tdicamrUE.ebzpW/MmSJa.O", 1, "admin" },
-                    { 2L, "john.doe@example.com", "$2a$11$W0xDb3m/9c8YocmkCrC0beWWaTexoQctvM0BMl0x7fpRsUO6rC8ru", 0, "john_doe" },
-                    { 3L, "jane.smith@example.com", "$2a$11$y5A/zu1/W6hcmBsgoIKqAOdqN9cnkD78O5hAJMBwRy2VHV/89jUe6", 0, "jane_smith" }
+                    { 1L, "admin@shop.com", "$2a$11$AyYyz1fFYkZSyy0cPW5Fke0LnHsfmzGqVf0BbYz.6EBs7Gk8VsNOi", 1, "admin" },
+                    { 2L, "john.doe@example.com", "$2a$11$./hbegWTXObMiesQ/CyVY.qJ4eAMXgwmzg80Su0Ha8UfZnylTM1Wy", 0, "john_doe" },
+                    { 3L, "jane.smith@example.com", "$2a$11$3fKpbcjMmjgrl..PScYD7OCYW3Vapg6EK1r3RHmJLXOgXPtigILp2", 0, "jane_smith" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Carts",
+                columns: new[] { "Id", "UserId" },
+                values: new object[,]
+                {
+                    { 1L, 1L },
+                    { 2L, 2L },
+                    { 3L, 3L }
                 });
 
             migrationBuilder.InsertData(
@@ -159,17 +241,10 @@ namespace backend.Migrations
                     { 60L, new DateTime(2025, 9, 8, 13, 0, 0, 0, DateTimeKind.Utc), 1L, "https://api.iconify.design/mdi:package-variant.svg?color=%23666666&width=400&height=400", null, "Tesla Model Y Accessories Kit", 499.99m, 9, "Premium accessories bundle for Tesla Model Y." }
                 });
 
-            migrationBuilder.InsertData(
+            migrationBuilder.CreateIndex(
+                name: "IX_CartItems_CartId",
                 table: "CartItems",
-                columns: new[] { "Id", "ProductId", "Quantity", "UserId" },
-                values: new object[,]
-                {
-                    { 1L, 1L, 1, 2L },
-                    { 2L, 2L, 2, 2L },
-                    { 3L, 4L, 1, 2L },
-                    { 4L, 3L, 1, 3L },
-                    { 5L, 5L, 1, 3L }
-                });
+                column: "CartId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_CartItems_ProductId",
@@ -177,14 +252,31 @@ namespace backend.Migrations
                 column: "ProductId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_CartItems_UserId",
-                table: "CartItems",
-                column: "UserId");
+                name: "IX_Carts_UserId",
+                table: "Carts",
+                column: "UserId",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Products_CreatedByUserId",
                 table: "Products",
                 column: "CreatedByUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_RefreshTokens_UserId",
+                table: "RefreshTokens",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Reviews_ProductId",
+                table: "Reviews",
+                column: "ProductId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Reviews_UserId_ProductId",
+                table: "Reviews",
+                columns: new[] { "UserId", "ProductId" },
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Users_Email",
@@ -204,6 +296,15 @@ namespace backend.Migrations
         {
             migrationBuilder.DropTable(
                 name: "CartItems");
+
+            migrationBuilder.DropTable(
+                name: "RefreshTokens");
+
+            migrationBuilder.DropTable(
+                name: "Reviews");
+
+            migrationBuilder.DropTable(
+                name: "Carts");
 
             migrationBuilder.DropTable(
                 name: "Products");

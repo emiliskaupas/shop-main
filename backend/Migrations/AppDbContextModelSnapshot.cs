@@ -899,7 +899,7 @@ namespace backend.Migrations
                         {
                             Id = 1L,
                             Email = "admin@shop.com",
-                            PasswordHash = "$2a$11$0fa6fAipg1pqBYwmBu4JzeOtaekrmuL2.BjRhqKgMlWGQpQ1mybqO",
+                            PasswordHash = "$2a$11$BbMMt.42L2iXd91aCm2qKOWLpjB1NaSCV6.jiK/SqCZoWZPwm2Jv.",
                             Role = 1,
                             Username = "admin"
                         },
@@ -907,7 +907,7 @@ namespace backend.Migrations
                         {
                             Id = 2L,
                             Email = "john.doe@example.com",
-                            PasswordHash = "$2a$11$yZiRIFtDF.qm2NyXX/QmxuHcnaoEmsZa7XN24ddOM5BT.t9AiCT5e",
+                            PasswordHash = "$2a$11$Ii7loMC3ucGQYINIbAdU3./u1yIMwbvvr7CTwM/xxZ/8wZt.ri8/G",
                             Role = 0,
                             Username = "john_doe"
                         },
@@ -915,7 +915,7 @@ namespace backend.Migrations
                         {
                             Id = 3L,
                             Email = "jane.smith@example.com",
-                            PasswordHash = "$2a$11$Fg6CYORy0uhHSfMTd0DeIe1ruCHXui1JONw4FafxktMCHm5G.o3zm",
+                            PasswordHash = "$2a$11$f5mO1DIdGORYG/s99NU3POFJzg/R0VwgrYauFU2ilz1AxiudHrJpu",
                             Role = 0,
                             Username = "jane_smith"
                         });
