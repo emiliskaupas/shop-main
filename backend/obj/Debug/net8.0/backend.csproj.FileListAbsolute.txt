@@ -447,3 +447,6 @@ C:\Users\Emilis\Desktop\shop-main\shop-main\backend\obj\Debug\net8.0\refint\back
 C:\Users\Emilis\Desktop\shop-main\shop-main\backend\obj\Debug\net8.0\backend.pdb
 C:\Users\Emilis\Desktop\shop-main\shop-main\backend\obj\Debug\net8.0\backend.genruntimeconfig.cache
 C:\Users\Emilis\Desktop\shop-main\shop-main\backend\obj\Debug\net8.0\ref\backend.dll
+C:\Users\Emilis\Desktop\shop-main\shop-main\backend\bin\Debug\net8.0\appsettings.Production.json
+C:\Users\Emilis\Desktop\shop-main\shop-main\backend\bin\Debug\net8.0\Npgsql.dll
+C:\Users\Emilis\Desktop\shop-main\shop-main\backend\bin\Debug\net8.0\Npgsql.EntityFrameworkCore.PostgreSQL.dll

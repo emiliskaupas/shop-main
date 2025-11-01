@@ -13,10 +13,15 @@ public static class ModelBuilderExtensions
         {
             entity.Property(p => p.Name)
                 .IsRequired()
-                .HasMaxLength(200);
+                .HasMaxLength(200)
+                .HasColumnType("varchar(200)");
 
             entity.Property(p => p.ShortDescription)
-                .HasMaxLength(500);
+                .HasMaxLength(500)
+                .HasColumnType("varchar(500)");
+
+            entity.Property(p => p.ImageUrl)
+                .HasColumnType("text");
 
             entity.Property(p => p.Price)
                 .HasColumnType("decimal(18,2)");
@@ -40,11 +45,17 @@ public static class ModelBuilderExtensions
         {
             entity.Property(u => u.Username)
                 .IsRequired()
-                .HasMaxLength(50);
+                .HasMaxLength(50)
+                .HasColumnType("varchar(50)");
 
             entity.Property(u => u.Email)
                 .IsRequired()
-                .HasMaxLength(100);
+                .HasMaxLength(100)
+                .HasColumnType("varchar(100)");
+
+            entity.Property(u => u.PasswordHash)
+                .IsRequired()
+                .HasColumnType("text");
 
             entity.HasIndex(u => u.Username)
                 .IsUnique();
@@ -99,7 +110,8 @@ public static class ModelBuilderExtensions
                 .HasAnnotation("MaxValue", 5);
 
             entity.Property(r => r.Comment)
-                .HasMaxLength(1000);
+                .HasMaxLength(1000)
+                .HasColumnType("varchar(1000)");
 
             entity.Property(r => r.CreatedAt)
                 .IsRequired();
@@ -121,6 +133,16 @@ public static class ModelBuilderExtensions
             // Ensure one review per user per product
             entity.HasIndex(r => new { r.UserId, r.ProductId })
                 .IsUnique();
+        });
+
+        // =========================
+        // REFRESH TOKEN CONFIGURATION
+        // =========================
+        modelBuilder.Entity<RefreshToken>(entity =>
+        {
+            entity.Property(rt => rt.Token)
+                .IsRequired()
+                .HasColumnType("text");
         });
     }
 
