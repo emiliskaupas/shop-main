@@ -106,12 +106,23 @@ builder.Services.AddCors(options =>
 });
 
 var app = builder.Build();
-// Migration is already handled manually
-// using (var scope = app.Services.CreateScope())
-// {
-//     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-//     db.Database.Migrate();
-// }
+
+// Auto-run migrations on startup
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    try
+    {
+        Console.WriteLine("Running database migrations...");
+        db.Database.Migrate();
+        Console.WriteLine("Database migrations completed successfully!");
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Error running migrations: {ex.Message}");
+        throw;
+    }
+}
 
 if (app.Environment.IsDevelopment())
 {
