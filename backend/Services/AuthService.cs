@@ -13,6 +13,7 @@ using System.Security.Claims;
 using System.Text;
 using Microsoft.Extensions.Configuration;
 using BCrypt.Net;
+using System.Security.Cryptography;
 
 namespace backend.Services;
 
@@ -51,9 +52,23 @@ public class AuthService : BaseService
             if (!BCrypt.Net.BCrypt.Verify(loginDto.Password, user.PasswordHash))
                 return Result<LoginResponseDto>.Failure("Invalid username or password");
 
-            // Generate JWT token
+            // Generate JWT token and refresh token
             var token = GenerateJwtToken(user);
-            var expiresAt = DateTime.UtcNow.AddHours(24); // 24 hour expiration
+            var refreshToken = GenerateRefreshToken();
+            var expiresAt = DateTime.UtcNow.AddHours(1); // 1 hour for access token
+            var refreshTokenExpiresAt = DateTime.UtcNow.AddDays(7); // 7 days for refresh token
+
+            // Store refresh token in database
+            var refreshTokenEntity = new RefreshToken
+            {
+                Token = refreshToken,
+                UserId = user.Id,
+                ExpiresAt = refreshTokenExpiresAt,
+                IsRevoked = false
+            };
+
+            shopContext.RefreshTokens.Add(refreshTokenEntity);
+            await shopContext.SaveChangesAsync();
 
             // Map to DTO using existing pattern
             var userDto = user.ToDto();
@@ -61,7 +76,9 @@ public class AuthService : BaseService
             {
                 User = userDto,
                 Token = token,
-                ExpiresAt = expiresAt
+                RefreshToken = refreshToken,
+                ExpiresAt = expiresAt,
+                RefreshTokenExpiresAt = refreshTokenExpiresAt
             };
 
             // Trigger login notification
@@ -153,12 +170,103 @@ public class AuthService : BaseService
         var tokenDescriptor = new SecurityTokenDescriptor
         {
             Subject = new ClaimsIdentity(claims),
-            Expires = DateTime.UtcNow.AddHours(24),
+            Expires = DateTime.UtcNow.AddHours(1), // Changed to 1 hour
             SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
         };
 
         var tokenHandler = new JwtSecurityTokenHandler();
         var token = tokenHandler.CreateToken(tokenDescriptor);
         return tokenHandler.WriteToken(token);
+    }
+
+    private string GenerateRefreshToken()
+    {
+        var randomNumber = new byte[32];
+        using var rng = RandomNumberGenerator.Create();
+        rng.GetBytes(randomNumber);
+        return Convert.ToBase64String(randomNumber);
+    }
+
+    public async Task<Result<RefreshTokenResponseDto>> RefreshTokenAsync(RefreshTokenDto refreshTokenDto)
+    {
+        try
+        {
+            // Find the refresh token in database
+            var storedToken = await shopContext.RefreshTokens
+                .Include(rt => rt.User)
+                .FirstOrDefaultAsync(rt => rt.Token == refreshTokenDto.RefreshToken);
+
+            if (storedToken == null)
+                return Result<RefreshTokenResponseDto>.Failure("Invalid refresh token");
+
+            // Check if token is revoked
+            if (storedToken.IsRevoked)
+                return Result<RefreshTokenResponseDto>.Failure("Refresh token has been revoked");
+
+            // Check if token is expired
+            if (storedToken.ExpiresAt < DateTime.UtcNow)
+                return Result<RefreshTokenResponseDto>.Failure("Refresh token has expired");
+
+            // Generate new access token and refresh token
+            var newAccessToken = GenerateJwtToken(storedToken.User);
+            var newRefreshToken = GenerateRefreshToken();
+            var expiresAt = DateTime.UtcNow.AddHours(1);
+            var refreshTokenExpiresAt = DateTime.UtcNow.AddDays(7);
+
+            // Revoke old refresh token
+            storedToken.IsRevoked = true;
+            storedToken.RevokedAt = DateTime.UtcNow;
+
+            // Create new refresh token
+            var newRefreshTokenEntity = new RefreshToken
+            {
+                Token = newRefreshToken,
+                UserId = storedToken.UserId,
+                ExpiresAt = refreshTokenExpiresAt,
+                IsRevoked = false
+            };
+
+            shopContext.RefreshTokens.Add(newRefreshTokenEntity);
+            await shopContext.SaveChangesAsync();
+
+            var response = new RefreshTokenResponseDto
+            {
+                Token = newAccessToken,
+                RefreshToken = newRefreshToken,
+                ExpiresAt = expiresAt,
+                RefreshTokenExpiresAt = refreshTokenExpiresAt
+            };
+
+            return Result<RefreshTokenResponseDto>.Success(response);
+        }
+        catch (Exception ex)
+        {
+            return Result<RefreshTokenResponseDto>.Failure($"Failed to refresh token: {ex.Message}");
+        }
+    }
+
+    public async Task<Result<bool>> RevokeTokenAsync(RefreshTokenDto refreshTokenDto)
+    {
+        try
+        {
+            var storedToken = await shopContext.RefreshTokens
+                .FirstOrDefaultAsync(rt => rt.Token == refreshTokenDto.RefreshToken);
+
+            if (storedToken == null)
+                return Result<bool>.Failure("Invalid refresh token");
+
+            if (storedToken.IsRevoked)
+                return Result<bool>.Failure("Token already revoked");
+
+            storedToken.IsRevoked = true;
+            storedToken.RevokedAt = DateTime.UtcNow;
+            await shopContext.SaveChangesAsync();
+
+            return Result<bool>.Success(true);
+        }
+        catch (Exception ex)
+        {
+            return Result<bool>.Failure($"Failed to revoke token: {ex.Message}");
+        }
     }
 }

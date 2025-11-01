@@ -37,8 +37,9 @@ export const useAuthStore = create<AuthState & AuthActions>((set, get) => ({
       if (response.success && 'data' in response) {
         const loginResponse = response.data as LoginResponseDto;
 
-        // Store token and user
+        // Store token, refresh token, and user
         localStorageService.setAuthToken(loginResponse.token);
+        localStorageService.setRefreshToken(loginResponse.refreshToken);
         localStorageService.setUser(loginResponse.user);
 
         set({
@@ -46,7 +47,7 @@ export const useAuthStore = create<AuthState & AuthActions>((set, get) => ({
           isAuthenticated: true,
           isLoading: false,
           error: null,
-          isInitialized: true, //ensure we’re initialized after login
+          isInitialized: true, //ensure we're initialized after login
         });
 
         return true;

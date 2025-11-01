@@ -133,7 +133,7 @@ public class ProductService : BaseService
         }
     }
     
-    public async Task<Result<ProductDto>> UpdateProductAsync(long id, UpdateProductDto productDto, long userId)
+    public async Task<Result<ProductDto>> UpdateProductAsync(long id, UpdateProductDto productDto, long userId, bool isAdmin = false)
     {
         try
         {
@@ -150,8 +150,8 @@ public class ProductService : BaseService
             if (existingProduct == null)
                 return Result<ProductDto>.Failure("Product not found");
 
-            // Check if the user owns this product
-            if (existingProduct.CreatedByUserId != userId)
+            // Check if the user owns this product or is admin
+            if (!isAdmin && existingProduct.CreatedByUserId != userId)
                 return Result<ProductDto>.Failure("You can only modify your own products");
 
             // Validate using shared validation extensions
@@ -175,7 +175,7 @@ public class ProductService : BaseService
         }
     }
 
-    public async Task<Result> DeleteProductAsync(long id, long userId)
+    public async Task<Result> DeleteProductAsync(long id, long userId, bool isAdmin = false)
     {
         try
         {
@@ -188,8 +188,8 @@ public class ProductService : BaseService
             if (product == null)
                 return Result.Failure("Product not found");
 
-            // Check if the user owns this product
-            if (product.CreatedByUserId != userId)
+            // Check if the user owns this product or is admin
+            if (!isAdmin && product.CreatedByUserId != userId)
                 return Result.Failure("You can only delete your own products");
 
             shopContext.Products.Remove(product);

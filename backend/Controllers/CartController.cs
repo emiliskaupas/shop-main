@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using backend.Services;
 using backend.DTOs;
 using backend.Models;
@@ -8,6 +9,7 @@ namespace backend.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize] // Require authentication for all cart operations
 public class CartController : BaseController
 {
     private readonly CartService cartService;
@@ -25,6 +27,10 @@ public class CartController : BaseController
         if (idValidation != null)
             return idValidation;
 
+        // Verify that the user is accessing their own cart or is an admin
+        if (!CanAccessUser(userId))
+            return Forbid();
+
         var result = await this.cartService.GetCartItemsAsync(userId);
 
         if (!result.IsSuccess)
@@ -40,6 +46,10 @@ public class CartController : BaseController
         var idValidation = ValidateIds((userId, "userId"), (request.ProductId, "productId"));
         if (idValidation != null)
             return idValidation;
+
+        // Verify that the user is accessing their own cart or is an admin
+        if (!CanAccessUser(userId))
+            return Forbid();
 
         // Validate quantity
         if (request.Quantity <= 0)
@@ -67,6 +77,10 @@ public class CartController : BaseController
         if (idValidation != null)
             return idValidation;
 
+        // Verify that the user is accessing their own cart or is an admin
+        if (!CanAccessUser(userId))
+            return Forbid();
+
         // Validate quantity
         if (request.Quantity <= 0)
         {
@@ -93,6 +107,10 @@ public class CartController : BaseController
         if (idValidation != null)
             return idValidation;
 
+        // Verify that the user is accessing their own cart or is an admin
+        if (!CanAccessUser(userId))
+            return Forbid();
+
         var result = await this.cartService.RemoveFromCartAsync(userId, cartItemId);
 
         if (!result.IsSuccess)
@@ -108,6 +126,10 @@ public class CartController : BaseController
         var idValidation = ValidateId(userId, "userId");
         if (idValidation != null)
             return idValidation;
+
+        // Verify that the user is accessing their own cart or is an admin
+        if (!CanAccessUser(userId))
+            return Forbid();
 
         var result = await this.cartService.ClearCartAsync(userId);
 
@@ -125,6 +147,10 @@ public class CartController : BaseController
         if (idValidation != null)
             return idValidation;
 
+        // Verify that the user is accessing their own cart or is an admin
+        if (!CanAccessUser(userId))
+            return Forbid();
+
         var result = await this.cartService.GetCartTotalAsync(userId);
 
         if (!result.IsSuccess)
@@ -140,6 +166,10 @@ public class CartController : BaseController
         var idValidation = ValidateId(userId, "userId");
         if (idValidation != null)
             return idValidation;
+
+        // Verify that the user is accessing their own cart or is an admin
+        if (!CanAccessUser(userId))
+            return Forbid();
 
         var result = await this.cartService.GetCartItemCountAsync(userId);
 

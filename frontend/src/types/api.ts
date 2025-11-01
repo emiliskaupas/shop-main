@@ -22,7 +22,20 @@ export interface UserDto {
 export interface LoginResponseDto {
   user: UserDto;
   token: string;
+  refreshToken: string;
   expiresAt: string;
+  refreshTokenExpiresAt: string;
+}
+
+export interface RefreshTokenDto {
+  refreshToken: string;
+}
+
+export interface RefreshTokenResponseDto {
+  token: string;
+  refreshToken: string;
+  expiresAt: string;
+  refreshTokenExpiresAt: string;
 }
 
 // Product DTOs
@@ -136,8 +149,7 @@ export interface ReviewDto {
   id: number;
   productId: number;
   userId: number;
-  userName?: string;
-  userEmail?: string;
+  username?: string;
   rating: number;
   comment?: string;
   createdAt: string;

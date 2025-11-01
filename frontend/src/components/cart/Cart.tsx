@@ -274,18 +274,47 @@ export const Cart: React.FC = () => {
                           textAlign: { xs: 'center', sm: 'left' }
                         }}
                       >
-                        <Avatar
-                          src={product.imageUrl}
-                          variant="rounded"
-                          sx={{ width: 80, height: 80, alignSelf: { xs: 'center', sm: 'flex-start' } }}
+                        <Link 
+                          to={`/products/${product.id}`} 
+                          style={{ textDecoration: 'none', color: 'inherit' }}
                         >
-                          {product.name.charAt(0)}
-                        </Avatar>
+                          <Avatar
+                            src={product.imageUrl}
+                            variant="rounded"
+                            sx={{ 
+                              width: 80, 
+                              height: 80, 
+                              alignSelf: { xs: 'center', sm: 'flex-start' },
+                              cursor: 'pointer',
+                              transition: 'transform 0.2s',
+                              '&:hover': {
+                                transform: 'scale(1.05)',
+                              }
+                            }}
+                          >
+                            {product.name.charAt(0)}
+                          </Avatar>
+                        </Link>
                         
                         <Box flex={1}>
-                          <Typography variant="h6" gutterBottom>
-                            {product.name}
-                          </Typography>
+                          <Link 
+                            to={`/products/${product.id}`} 
+                            style={{ textDecoration: 'none', color: 'inherit' }}
+                          >
+                            <Typography 
+                              variant="h6" 
+                              gutterBottom
+                              sx={{
+                                cursor: 'pointer',
+                                '&:hover': {
+                                  color: 'primary.main',
+                                  textDecoration: 'underline',
+                                }
+                              }}
+                            >
+                              {product.name}
+                            </Typography>
+                          </Link>
                           <Typography variant="body2" color="text.secondary" gutterBottom>
                             {product.shortDescription}
                           </Typography>

@@ -1,14 +1,12 @@
 namespace backend.DTOs;
 
-public class LoginDto
+public class RefreshTokenDto
 {
-    public string Username { get; set; } = string.Empty;
-    public string Password { get; set; } = string.Empty; // User inputs plain password
+    public string RefreshToken { get; set; } = string.Empty;
 }
 
-public class LoginResponseDto
+public class RefreshTokenResponseDto
 {
-    public UserDto User { get; set; } = new();
     public string Token { get; set; } = string.Empty;
     public string RefreshToken { get; set; } = string.Empty;
     public DateTime ExpiresAt { get; set; }

@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using backend.Services;
 using Shop.Shared.Notifications;
 
@@ -6,6 +7,7 @@ namespace backend.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize] // Require authentication for all notification endpoints
 public class NotificationController : ControllerBase
 {
     private readonly NotificationService notificationService;

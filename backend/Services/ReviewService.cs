@@ -136,7 +136,7 @@ public class ReviewService : BaseService
         }
     }
 
-    public async Task<Result<ReviewDto>> UpdateReviewAsync(long userId, long reviewId, UpdateReviewDto updateReviewDto)
+    public async Task<Result<ReviewDto>> UpdateReviewAsync(long userId, long reviewId, UpdateReviewDto updateReviewDto, bool isAdmin = false)
     {
         try
         {
@@ -155,10 +155,14 @@ public class ReviewService : BaseService
 
             var review = await shopContext.Reviews
                 .Include(r => r.User)
-                .FirstOrDefaultAsync(r => r.Id == reviewId && r.UserId == userId);
+                .FirstOrDefaultAsync(r => r.Id == reviewId);
 
             if (review == null)
-                return Result<ReviewDto>.Failure("Review not found or you don't have permission to edit it");
+                return Result<ReviewDto>.Failure("Review not found");
+
+            // Check if user owns this review or is admin
+            if (!isAdmin && review.UserId != userId)
+                return Result<ReviewDto>.Failure("You don't have permission to edit this review");
 
             review.Rating = updateReviewDto.Rating;
             review.Comment = updateReviewDto.Comment;
@@ -174,15 +178,19 @@ public class ReviewService : BaseService
         }
     }
 
-    public async Task<Result> DeleteReviewAsync(long userId, long reviewId)
+    public async Task<Result> DeleteReviewAsync(long userId, long reviewId, bool isAdmin = false)
     {
         try
         {
             var review = await shopContext.Reviews
-                .FirstOrDefaultAsync(r => r.Id == reviewId && r.UserId == userId);
+                .FirstOrDefaultAsync(r => r.Id == reviewId);
 
             if (review == null)
-                return Result.Failure("Review not found or you don't have permission to delete it");
+                return Result.Failure("Review not found");
+
+            // Check if user owns this review or is admin
+            if (!isAdmin && review.UserId != userId)
+                return Result.Failure("You don't have permission to delete this review");
 
             shopContext.Reviews.Remove(review);
             await shopContext.SaveChangesAsync();

@@ -94,7 +94,7 @@ public class ProductsController : BaseController
         if (userId == 0)
             return Unauthorized(new { error = "Invalid user authentication" });
 
-        var result = await this.productService.UpdateProductAsync(id, product, userId);
+        var result = await this.productService.UpdateProductAsync(id, product, userId, IsAdmin());
 
         if (!result.IsSuccess)
             return HandleServiceError(result.ErrorMessage!);
@@ -115,7 +115,7 @@ public class ProductsController : BaseController
         if (userId == 0)
             return Unauthorized(new { error = "Invalid user authentication" });
 
-        var result = await this.productService.DeleteProductAsync(id, userId);
+        var result = await this.productService.DeleteProductAsync(id, userId, IsAdmin());
 
         if (!result.IsSuccess)
             return HandleServiceError(result.ErrorMessage!);

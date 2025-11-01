@@ -115,7 +115,7 @@ public class ReviewsController : BaseController
         if (userId == 0)
             return Unauthorized(new { error = "Invalid user token" });
 
-        var result = await _reviewService.UpdateReviewAsync(userId, reviewId, updateReviewDto);
+        var result = await _reviewService.UpdateReviewAsync(userId, reviewId, updateReviewDto, IsAdmin());
         
         if (result.IsSuccess)
             return Ok(result.Data);
@@ -136,7 +136,7 @@ public class ReviewsController : BaseController
         if (userId == 0)
             return Unauthorized(new { error = "Invalid user token" });
 
-        var result = await _reviewService.DeleteReviewAsync(userId, reviewId);
+        var result = await _reviewService.DeleteReviewAsync(userId, reviewId, IsAdmin());
         
         if (result.IsSuccess)
             return NoContent();

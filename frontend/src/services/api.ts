@@ -3,6 +3,8 @@ import {
   LoginDto,
   RegisterDto,
   LoginResponseDto,
+  RefreshTokenDto,
+  RefreshTokenResponseDto,
   UserDto,
   ProductDto,
   CreateProductDto,
@@ -37,17 +39,51 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// Response interceptor for consistent error handling
+// Response interceptor for consistent error handling and token refresh
 api.interceptors.response.use(
   (response) => response,
-  (error) => {
-    // Handle common error scenarios
-    if (error.response?.status === 401) {
-      // Token expired or invalid
-      localStorage.removeItem('authToken');
-      localStorage.removeItem('user');
-      window.location.href = '/login';
+  async (error) => {
+    const originalRequest = error.config;
+
+    // Handle token expiration with refresh
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
+
+      const refreshToken = localStorage.getItem('refreshToken');
+      
+      if (refreshToken) {
+        try {
+          // Try to refresh the token
+          const response = await axios.post(
+            `${process.env.REACT_APP_API_URL || 'http://localhost:5000/api'}/auth/refresh`,
+            { refreshToken }
+          );
+
+          const { token: newToken, refreshToken: newRefreshToken } = response.data;
+
+          // Update stored tokens
+          localStorage.setItem('authToken', newToken);
+          localStorage.setItem('refreshToken', newRefreshToken);
+
+          // Retry the original request with new token
+          originalRequest.headers.Authorization = `Bearer ${newToken}`;
+          return api(originalRequest);
+        } catch (refreshError) {
+          // Refresh failed, log out user
+          localStorage.removeItem('authToken');
+          localStorage.removeItem('refreshToken');
+          localStorage.removeItem('user');
+          window.location.href = '/login';
+          return Promise.reject(refreshError);
+        }
+      } else {
+        // No refresh token, log out user
+        localStorage.removeItem('authToken');
+        localStorage.removeItem('user');
+        window.location.href = '/login';
+      }
     }
+
     return Promise.reject(error);
   }
 );
@@ -79,6 +115,24 @@ export const authApi = {
     try {
       const response = await api.post<UserDto>('/auth/register', registerDto);
       return { data: handleResponse(response), success: true };
+    } catch (error) {
+      return handleError(error);
+    }
+  },
+
+  refreshToken: async (refreshTokenDto: RefreshTokenDto): Promise<ApiResponse<RefreshTokenResponseDto>> => {
+    try {
+      const response = await api.post<RefreshTokenResponseDto>('/auth/refresh', refreshTokenDto);
+      return { data: handleResponse(response), success: true };
+    } catch (error) {
+      return handleError(error);
+    }
+  },
+
+  revokeToken: async (refreshTokenDto: RefreshTokenDto): Promise<ApiResponse<void>> => {
+    try {
+      await api.post('/auth/revoke', refreshTokenDto);
+      return { data: undefined, success: true };
     } catch (error) {
       return handleError(error);
     }

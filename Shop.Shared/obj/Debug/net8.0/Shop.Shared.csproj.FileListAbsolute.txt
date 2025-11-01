@@ -21,3 +21,15 @@ C:\Users\Emilis\Downloads\shop-main\shop-main\Shop.Shared\obj\Debug\net8.0\Shop.
 C:\Users\Emilis\Downloads\shop-main\shop-main\Shop.Shared\obj\Debug\net8.0\refint\Shop.Shared.dll
 C:\Users\Emilis\Downloads\shop-main\shop-main\Shop.Shared\obj\Debug\net8.0\Shop.Shared.pdb
 C:\Users\Emilis\Downloads\shop-main\shop-main\Shop.Shared\obj\Debug\net8.0\ref\Shop.Shared.dll
+C:\Users\Emilis\Desktop\shop-main\shop-main\Shop.Shared\bin\Debug\net8.0\Shop.Shared.deps.json
+C:\Users\Emilis\Desktop\shop-main\shop-main\Shop.Shared\bin\Debug\net8.0\Shop.Shared.dll
+C:\Users\Emilis\Desktop\shop-main\shop-main\Shop.Shared\bin\Debug\net8.0\Shop.Shared.pdb
+C:\Users\Emilis\Desktop\shop-main\shop-main\Shop.Shared\obj\Debug\net8.0\Shop.Shared.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Emilis\Desktop\shop-main\shop-main\Shop.Shared\obj\Debug\net8.0\Shop.Shared.AssemblyInfoInputs.cache
+C:\Users\Emilis\Desktop\shop-main\shop-main\Shop.Shared\obj\Debug\net8.0\Shop.Shared.AssemblyInfo.cs
+C:\Users\Emilis\Desktop\shop-main\shop-main\Shop.Shared\obj\Debug\net8.0\Shop.Shared.csproj.CoreCompileInputs.cache
+C:\Users\Emilis\Desktop\shop-main\shop-main\Shop.Shared\obj\Debug\net8.0\Shop.Shared.sourcelink.json
+C:\Users\Emilis\Desktop\shop-main\shop-main\Shop.Shared\obj\Debug\net8.0\Shop.Shared.dll
+C:\Users\Emilis\Desktop\shop-main\shop-main\Shop.Shared\obj\Debug\net8.0\refint\Shop.Shared.dll
+C:\Users\Emilis\Desktop\shop-main\shop-main\Shop.Shared\obj\Debug\net8.0\Shop.Shared.pdb
+C:\Users\Emilis\Desktop\shop-main\shop-main\Shop.Shared\obj\Debug\net8.0\ref\Shop.Shared.dll

@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using backend.Models.Enums;
 
 namespace backend.Controllers;
 
@@ -10,6 +11,18 @@ public abstract class BaseController : ControllerBase
     {
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         return long.TryParse(userIdClaim, out var userId) ? userId : 0;
+    }
+
+    protected bool IsAdmin()
+    {
+        var roleClaim = User.FindFirst(ClaimTypes.Role)?.Value;
+        return roleClaim == UserRole.Admin.ToString();
+    }
+
+    protected bool CanAccessUser(long userId)
+    {
+        // Admin can access any user, regular users can only access themselves
+        return IsAdmin() || GetCurrentUserId() == userId;
     }
 
     protected IActionResult ValidateId(long id, string parameterName = "id")

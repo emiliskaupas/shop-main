@@ -98,6 +98,19 @@ export const localStorageService = {
     localStorage.removeItem('authToken');
   },
 
+  // Refresh token operations
+  setRefreshToken: (token: string): void => {
+    localStorage.setItem('refreshToken', token);
+  },
+
+  getRefreshToken: (): string | null => {
+    return localStorage.getItem('refreshToken');
+  },
+
+  removeRefreshToken: (): void => {
+    localStorage.removeItem('refreshToken');
+  },
+
   // User operations
   setUser: (user: any): void => {
     localStorage.setItem('user', JSON.stringify(user));
@@ -120,6 +133,7 @@ export const localStorageService = {
   // Clear all app data
   clearAll: (): void => {
     localStorageService.removeAuthToken();
+    localStorageService.removeRefreshToken();
     localStorageService.removeUser();
     localStorageService.clearCart();
   },

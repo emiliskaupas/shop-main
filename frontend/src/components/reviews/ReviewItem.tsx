@@ -76,11 +76,11 @@ export const ReviewItem: React.FC<ReviewItemProps> = ({
         <Box display="flex" justifyContent="space-between" alignItems="flex-start">
           <Box display="flex" alignItems="center" mb={1}>
             <Avatar sx={{ mr: 2, bgcolor: 'primary.main' }}>
-              {getInitials(review.userName || 'Anonymous')}
+              {getInitials(review.username || 'Anonymous')}
             </Avatar>
             <Box>
               <Typography variant="subtitle2" component="div">
-                {review.userName || 'Anonymous'}
+                {review.username || 'Anonymous'}
               </Typography>
               <Typography variant="body2" color="text.secondary">
                 {formatDate(review.createdAt)}
