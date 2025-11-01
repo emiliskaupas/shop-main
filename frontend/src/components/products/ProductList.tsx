@@ -527,18 +527,15 @@ export const ProductList: React.FC = () => {
               <Box
                 display="grid"
                 gridTemplateColumns={{
-                  xs: 'repeat(auto-fit, minmax(333px, 1fr))',
-                  sm: 'repeat(auto-fit, minmax(333px, 373px))',
-                  md: 'repeat(auto-fit, minmax(333px, 373px))',
+                  xs: 'repeat(3, 1fr)',
+                  sm: 'repeat(auto-fit, minmax(280px, 1fr))',
+                  md: 'repeat(auto-fit, minmax(300px, 1fr))',
                   lg: 'repeat(auto-fit, minmax(333px, 373px))',
                 }}
-                gap={3}
-                justifyContent="center"
+                gap={2}
                 sx={{
                   '& > *': {
                     width: '100%',
-                    maxWidth: 373,
-                    justifySelf: 'center',
                   }
                 }}
               >
